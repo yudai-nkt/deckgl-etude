@@ -12,7 +12,7 @@ const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
 // Source data CSV
 const DATA_URL = {
   TRIPS:
-    'https://gist.githubusercontent.com/yudai-nkt/0883b385206cd60ec22ae957c7b03946/raw/770bd53ba3e39de7ef892bd7aa8ad17cdf19c9c5/ny-taxi.json'
+    'https://gist.githubusercontent.com/yudai-nkt/80bdbecde74ea431c755e31fa167451d/raw/6b37fadcd38a009eeec6e732439b1eb6a47e7a19/tmp.json'
 };
 
 const DEFAULT_THEME = {
@@ -22,12 +22,12 @@ const DEFAULT_THEME = {
 
 const INITIAL_VIEW_STATE = {
   // NY
-  longitude: -74,
-  latitude: 40.72,
+  // longitude: -74,
+  // latitude: 40.72,
   // Aizuwakamatsu
-  // longitude: 139.9,
-  // latitude: 37.5,
-  zoom: 12,
+  longitude: 139.91,
+  latitude: 37.48,
+  zoom: 14,
   pitch: 45,
   bearing: -30
 };
@@ -52,7 +52,7 @@ export default class App extends Component {
 
   _animate() {
     const {
-      loopLength = 1800, // unit corresponds to the timestamp in source data
+      loopLength = 3600, // unit corresponds to the timestamp in source data
       animationSpeed = 30 // unit time per second
     } = this.props;
     const timestamp = Date.now() / 1000;
@@ -76,6 +76,7 @@ export default class App extends Component {
         id: 'trips',
         data: trips,
         getPath: d => d.path,
+        getWidth: d => 40,
         getTimestamps: d => d.timestamps,
         getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
         opacity: 0.3,
