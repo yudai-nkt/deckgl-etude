@@ -1,146 +1,119 @@
-import React, { Component } from 'react';
-import { StaticMap } from 'react-map-gl';
-import DeckGL from 'deck.gl';
-// import { TripsLayer } from '@deck.gl/geo-layers';
-import taxiData from './taxi';
-import { renderLayers } from './deckgl-layers';
-import {
-  LayerControls,
-  MapStylePicker,
-  SCATTERPLOT_CONTROLS
-} from './controls';
-import { tooltipStyle } from './style';
+/* global window */
+import React, {Component} from 'react';
+import {render} from 'react-dom';
+import {StaticMap} from 'react-map-gl';
+import DeckGL from '@deck.gl/react';
+import {PolygonLayer} from '@deck.gl/layers';
+import {TripsLayer} from '@deck.gl/geo-layers';
+
+// Set your mapbox token here
+const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
+
+// Source data CSV
+const DATA_URL = {
+  TRIPS:
+    'https://gist.githubusercontent.com/yudai-nkt/0883b385206cd60ec22ae957c7b03946/raw/770bd53ba3e39de7ef892bd7aa8ad17cdf19c9c5/ny-taxi.json'
+};
+
+const DEFAULT_THEME = {
+  trailColor0: [253, 128, 93],
+  trailColor1: [23, 184, 190],
+};
 
 const INITIAL_VIEW_STATE = {
-  longitude: 139.9,
-  latitude: 37.5,
-  zoom: 11,
-  minZoom: 5,
-  maxZoom: 16,
-  pitch: 60,
-  bearing: -40
+  // NY
+  longitude: -74,
+  latitude: 40.72,
+  // Aizuwakamatsu
+  // longitude: 139.9,
+  // latitude: 37.5,
+  zoom: 12,
+  pitch: 45,
+  bearing: -30
 };
 
 export default class App extends Component {
-  state = {
-    hover: {
-      x: 0,
-      y: 0,
-      hoveredObject: null
-    },
-    points: [],
-    settings: Object.keys(SCATTERPLOT_CONTROLS).reduce(
-      (accu, key) => ({
-        ...accu,
-        [key]: SCATTERPLOT_CONTROLS[key].value
-      }),
-      {}
-    ),
-    style: 'mapbox://styles/mapbox/dark-v9'
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      time: 0
+    };
+  }
 
   componentDidMount() {
-    this._processData();
-    // ...
+    this._animate();
   }
 
-  _processData() {
-    const points = taxiData.reduce((accu, curr) => {
-      accu.push({
-        position: [Number(curr.pickup_longitude), Number(curr.pickup_latitude)],
-        pickup: true
-      });
-      accu.push({
-        position: [
-          Number(curr.dropoff_longitude),
-          Number(curr.dropoff_latitude)
-        ],
-        pickup: false
-      });
-      return accu;
-    }, []);
+  componentWillUnmount() {
+    if (this._animationFrame) {
+      window.cancelAnimationFrame(this._animationFrame);
+    }
+  }
+
+  _animate() {
+    const {
+      loopLength = 1800, // unit corresponds to the timestamp in source data
+      animationSpeed = 30 // unit time per second
+    } = this.props;
+    const timestamp = Date.now() / 1000;
+    const loopTime = loopLength / animationSpeed;
+
     this.setState({
-      points
+      time: ((timestamp % loopTime) / loopTime) * loopLength
     });
+    this._animationFrame = window.requestAnimationFrame(this._animate.bind(this));
   }
 
-  onStyleChange = style => {
-    this.setState({ style });
-  };
+  _renderLayers() {
+    const {
+      trips = DATA_URL.TRIPS,
+      trailLength = 30,
+      theme = DEFAULT_THEME
+    } = this.props;
 
-  _onHover({ x, y, object }) {
-    const label = object ? (object.pickup ? 'Pickup' : 'Dropoff') : null;
-    this.setState({ hover: { x, y, hoveredObject: object, label } });
+    return [
+      new TripsLayer({
+        id: 'trips',
+        data: trips,
+        getPath: d => d.path,
+        getTimestamps: d => d.timestamps,
+        getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+        opacity: 0.3,
+        widthMinPixels: 2,
+        rounded: true,
+        trailLength,
+        currentTime: this.state.time,
+
+        shadowEnabled: false
+      }),
+    ];
   }
-
-  _updateLayerSettings(settings) {
-    this.setState({ settings });
-  }
-
-  // _renderTrajectories() {
-  //   const {
-  //     // buildings = DATA_URL.BUILDINGS,
-  //     trips = '../tmp.json',
-  //     trailLength = 80,
-  //     // theme = DEFAULT_THEME
-  //   } = this.props;
-
-  //   return [
-  //     new TripsLayer({
-  //       id: 'Trips',
-  //       data: trips,
-  //       getPath: d => d.path,
-  //       getTimestamps: d => d.timestamps,
-  //       opacity: 0.3,
-  //       widthMinPixels: 2,
-  //       rounded: true,
-  //       trailLength,
-  //       currentTime: this.state.time,
-
-  //       shadowEnabled: false
-  //     })
-  //   ]
-  // }
 
   render() {
-    const data = this.state.points;
-    if (!data.length) {
-      return null;
-    }
-    const { hover, settings } = this.state;
+    const {
+      viewState,
+      mapStyle = 'mapbox://styles/mapbox/dark-v9',
+      theme = DEFAULT_THEME
+    } = this.props;
+
     return (
-      <div>
-        {hover.hoveredObject && (
-          <div
-            style={{
-              ...tooltipStyle,
-              transform: `translate(${hover.x}px, ${hover.y}px)`
-            }}
-          >
-            <div>{hover.label}</div>
-          </div>
-        )}
-        <MapStylePicker
-          onStyleChange={this.onStyleChange}
-          currentStyle={this.state.style}
+      <DeckGL
+        layers={this._renderLayers()}
+        initialViewState={INITIAL_VIEW_STATE}
+        viewState={viewState}
+        controller={true}
+      >
+        <StaticMap
+          reuseMaps
+          mapStyle={mapStyle}
+          preventStyleDiffing={true}
+          mapboxApiAccessToken={MAPBOX_TOKEN}
         />
-        <LayerControls
-          settings={this.state.settings}
-          propTypes={SCATTERPLOT_CONTROLS}
-          onChange={settings => this._updateLayerSettings(settings)}
-        />
-        <DeckGL
-          layers={renderLayers({
-            data: this.state.points,
-            onHover: hover => this._onHover(hover),
-            settings: this.state.settings
-          })}
-          initialViewState={INITIAL_VIEW_STATE}
-          controller
-        >
-          <StaticMap mapStyle={this.state.style} />
-        </DeckGL>
-      </div>
+      </DeckGL>
     );
   }
+}
+
+export function renderToDOM(container) {
+  render(<App />, container);
 }
