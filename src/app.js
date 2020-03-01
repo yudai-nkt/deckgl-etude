@@ -30,7 +30,7 @@ const INITIAL_VIEW_STATE = {
   // Aizuwakamatsu
   longitude: 139.91,
   latitude: 37.48,
-  zoom: 14,
+  zoom: 13,
   pitch: 45,
   bearing: -30
 };
@@ -79,7 +79,7 @@ export default class App extends Component {
         id: 'trips',
         data: trips,
         getPath: d => d.path,
-        getWidth: d => 40,
+        getWidth: d => 25,
         getTimestamps: d => d.timestamps,
         getColor: d => theme[d.vendor],
         opacity: 0.3,
