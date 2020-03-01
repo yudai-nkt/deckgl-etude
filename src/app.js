@@ -70,7 +70,7 @@ export default class App extends Component {
   _renderLayers() {
     const {
       trips = DATA_URL.TRIPS,
-      trailLength = 30,
+      trailLength = 60,
       theme = DEFAULT_THEME
     } = this.props;
 
