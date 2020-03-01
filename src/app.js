@@ -16,8 +16,11 @@ const DATA_URL = {
 };
 
 const DEFAULT_THEME = {
-  trailColor0: [253, 128, 93],
-  trailColor1: [23, 184, 190],
+  aizu_BL_01_3: [0, 139, 148],
+  aizu_BL_01_13: [217, 84, 104],
+  aizu_BL_01_1: [217, 142, 72],
+  aizu_BL_01_10: [139, 212, 156],
+  aizu_BL_01_20: [83, 154, 252]
 };
 
 const INITIAL_VIEW_STATE = {
@@ -78,7 +81,7 @@ export default class App extends Component {
         getPath: d => d.path,
         getWidth: d => 40,
         getTimestamps: d => d.timestamps,
-        getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+        getColor: d => theme[d.vendor],
         opacity: 0.3,
         widthMinPixels: 2,
         rounded: true,
