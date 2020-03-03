@@ -24,9 +24,6 @@ const DEFAULT_THEME = {
 };
 
 const INITIAL_VIEW_STATE = {
-  // NY
-  // longitude: -74,
-  // latitude: 40.72,
   // Aizuwakamatsu
   longitude: 139.91,
   latitude: 37.48,
