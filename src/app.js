@@ -1,7 +1,7 @@
 /* global window */
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {StaticMap} from 'react-map-gl';
+import {StaticMap, FullscreenControl} from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 import {PolygonLayer} from '@deck.gl/layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
@@ -104,6 +104,9 @@ export default class App extends Component {
         viewState={viewState}
         controller={true}
       >
+        <div style={{position: 'absolute', right: 10, top: 10}}>
+          <FullscreenControl container={document.querySelector('body')}/>
+        </div>
         <StaticMap
           reuseMaps
           mapStyle={mapStyle}
