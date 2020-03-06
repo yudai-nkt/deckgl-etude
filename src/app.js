@@ -32,11 +32,15 @@ const INITIAL_VIEW_STATE = {
   bearing: -30
 };
 
+const DEFAULT_ONSET_TIME = new Date('2018-04-03T10:00:00');
+
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      time: 0
+      time: 0,
+      onsetTime: DEFAULT_ONSET_TIME,
+      correspondingTime: ''
     };
   }
 
@@ -50,16 +54,26 @@ export default class App extends Component {
     }
   }
 
+  getHumanReadableTime(datetime) {
+    const date = `${datetime.toLocaleString('en-US', { month: 'long'})} ${datetime.getDay()}, ${datetime.getFullYear()}`
+    const time = `${datetime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}`
+
+    return `${date}, ${time}`
+  }
+
   _animate() {
     const {
-      loopLength = 3600, // unit corresponds to the timestamp in source data
-      animationSpeed = 30 // unit time per second
+      timeSpan = 3600, // unit corresponds to the timestamp in source data
+      framesPerSecond = 60 // unit time per second
     } = this.props;
-    const timestamp = Date.now() / 1000;
-    const loopTime = loopLength / animationSpeed;
+    const currTime = Date.now() / 1000;
+    const animationPeriod = timeSpan / framesPerSecond;
+    const elapsedTime = ((currTime % animationPeriod) / animationPeriod) * timeSpan
+    const newCorrespondingTime = this.getHumanReadableTime(new Date(this.state.onsetTime.getTime() + elapsedTime * 1000))
 
     this.setState({
-      time: ((timestamp % loopTime) / loopTime) * loopLength
+      time: elapsedTime,
+      correspondingTime: newCorrespondingTime
     });
     this._animationFrame = window.requestAnimationFrame(this._animate.bind(this));
   }
@@ -113,6 +127,9 @@ export default class App extends Component {
           preventStyleDiffing={true}
           mapboxApiAccessToken={MAPBOX_TOKEN}
         />
+        <div>
+          <h1>{this.state.correspondingTime}</h1>
+        </div>
       </DeckGL>
     );
   }
