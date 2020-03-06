@@ -4,6 +4,7 @@ import { render } from 'react-dom'
 import { StaticMap, FullscreenControl } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
 import { TripsLayer } from '@deck.gl/geo-layers'
+import { clockStyle } from './style'
 
 // Set your mapbox token here
 const MAPBOX_TOKEN = process.env.MapboxAccessToken
@@ -124,7 +125,7 @@ export default class App extends Component {
           preventStyleDiffing
           mapboxApiAccessToken={MAPBOX_TOKEN}
         />
-        <div>
+        <div style={clockStyle}>
           <h1>{this.state.correspondingTime}</h1>
         </div>
       </DeckGL>
