@@ -102,4 +102,5 @@ public
 # TernJS port file
 .tern-port
 
-
+# Built asset
+dist/bundle.js
