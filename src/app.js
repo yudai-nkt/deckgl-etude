@@ -23,7 +23,6 @@ const DEFAULT_THEME = {
 }
 
 const INITIAL_VIEW_STATE = {
-  // Aizuwakamatsu
   longitude: 139.91,
   latitude: 37.48,
   zoom: 13,
