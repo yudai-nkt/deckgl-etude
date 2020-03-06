@@ -53,7 +53,7 @@ export default class App extends Component {
   }
 
   getHumanReadableTime (datetime) {
-    const date = `${datetime.toLocaleString('en-US', { month: 'long' })} ${datetime.getDay()}, ${datetime.getFullYear()}`
+    const date = `${datetime.toLocaleString('en-US', { month: 'long' })} ${datetime.getDate()}, ${datetime.getFullYear()}`
     const time = `${datetime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
 
     return `${date}, ${time}`
