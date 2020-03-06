@@ -7,14 +7,14 @@ export const tooltipStyle = {
   fontSize: '10px',
   zIndex: 9,
   pointerEvents: 'none'
-};
+}
 
 export const mapStylePicker = {
   position: 'absolute',
   top: '20px',
   left: '20px',
   zIndex: 100
-};
+}
 
 export const layerControl = {
   borderRadius: 3,
@@ -30,7 +30,7 @@ export const layerControl = {
   padding: '20px',
   zIndex: 100,
   background: 'white'
-};
+}
 
 export const charts = {
   background: 'white',
@@ -47,7 +47,7 @@ export const charts = {
   bottom: 20,
   width: 500,
   zIndex: 100
-};
+}
 
 export const spinner = {
   animation: 'linear 2s infinite',
@@ -61,4 +61,4 @@ export const spinner = {
   left: 60,
   transformOrigin: '20px 20px',
   zIndex: 110
-};
+}

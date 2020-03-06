@@ -1,13 +1,13 @@
 /* global window */
-import React, {Component} from 'react';
-import {render} from 'react-dom';
-import {StaticMap, FullscreenControl} from 'react-map-gl';
-import DeckGL from '@deck.gl/react';
-import {PolygonLayer} from '@deck.gl/layers';
-import {TripsLayer} from '@deck.gl/geo-layers';
+import React, { Component } from 'react'
+import { render } from 'react-dom'
+import { StaticMap, FullscreenControl } from 'react-map-gl'
+import DeckGL from '@deck.gl/react'
+// import {PolygonLayer, GeoJsonLayer} from '@deck.gl/layers'
+import { TripsLayer } from '@deck.gl/geo-layers'
 
 // Set your mapbox token here
-const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
+const MAPBOX_TOKEN = process.env.MapboxAccessToken
 
 // Source data CSV
 const DATA_URL = {
@@ -21,7 +21,7 @@ const DEFAULT_THEME = {
   aizu_BL_01_1: [217, 142, 72],
   aizu_BL_01_10: [139, 212, 156],
   aizu_BL_01_20: [83, 154, 252]
-};
+}
 
 const INITIAL_VIEW_STATE = {
   // Aizuwakamatsu
@@ -30,60 +30,60 @@ const INITIAL_VIEW_STATE = {
   zoom: 13,
   pitch: 45,
   bearing: -30
-};
+}
 
-const DEFAULT_ONSET_TIME = new Date('2018-04-03T10:00:00');
+const DEFAULT_ONSET_TIME = new Date('2018-04-03T10:00:00')
 
 export default class App extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       time: 0,
       onsetTime: DEFAULT_ONSET_TIME,
       correspondingTime: ''
-    };
-  }
-
-  componentDidMount() {
-    this._animate();
-  }
-
-  componentWillUnmount() {
-    if (this._animationFrame) {
-      window.cancelAnimationFrame(this._animationFrame);
     }
   }
 
-  getHumanReadableTime(datetime) {
-    const date = `${datetime.toLocaleString('en-US', { month: 'long'})} ${datetime.getDay()}, ${datetime.getFullYear()}`
-    const time = `${datetime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}`
+  componentDidMount () {
+    this._animate()
+  }
+
+  componentWillUnmount () {
+    if (this._animationFrame) {
+      window.cancelAnimationFrame(this._animationFrame)
+    }
+  }
+
+  getHumanReadableTime (datetime) {
+    const date = `${datetime.toLocaleString('en-US', { month: 'long' })} ${datetime.getDay()}, ${datetime.getFullYear()}`
+    const time = `${datetime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
 
     return `${date}, ${time}`
   }
 
-  _animate() {
+  _animate () {
     const {
       timeSpan = 3600, // unit corresponds to the timestamp in source data
       framesPerSecond = 60 // unit time per second
-    } = this.props;
-    const currTime = Date.now() / 1000;
-    const animationPeriod = timeSpan / framesPerSecond;
+    } = this.props
+    const currTime = Date.now() / 1000
+    const animationPeriod = timeSpan / framesPerSecond
     const elapsedTime = ((currTime % animationPeriod) / animationPeriod) * timeSpan
     const newCorrespondingTime = this.getHumanReadableTime(new Date(this.state.onsetTime.getTime() + elapsedTime * 1000))
 
     this.setState({
       time: elapsedTime,
       correspondingTime: newCorrespondingTime
-    });
-    this._animationFrame = window.requestAnimationFrame(this._animate.bind(this));
+    })
+    this._animationFrame = window.requestAnimationFrame(this._animate.bind(this))
   }
 
-  _renderLayers() {
+  _renderLayers () {
     const {
       trips = DATA_URL.TRIPS,
       trailLength = 60,
       theme = DEFAULT_THEME
-    } = this.props;
+    } = this.props
 
     return [
       new TripsLayer({
@@ -104,37 +104,36 @@ export default class App extends Component {
     ];
   }
 
-  render() {
+  render () {
     const {
       viewState,
-      mapStyle = 'mapbox://styles/mapbox/dark-v9',
-      theme = DEFAULT_THEME
-    } = this.props;
+      mapStyle = 'mapbox://styles/mapbox/dark-v9'
+    } = this.props
 
     return (
       <DeckGL
         layers={this._renderLayers()}
         initialViewState={INITIAL_VIEW_STATE}
         viewState={viewState}
-        controller={true}
+        controller
       >
-        <div style={{position: 'absolute', right: 10, top: 10}}>
-          <FullscreenControl container={document.querySelector('body')}/>
+        <div style={{ position: 'absolute', right: 10, top: 10 }}>
+          <FullscreenControl container={document.querySelector('body')} />
         </div>
         <StaticMap
           reuseMaps
           mapStyle={mapStyle}
-          preventStyleDiffing={true}
+          preventStyleDiffing
           mapboxApiAccessToken={MAPBOX_TOKEN}
         />
         <div>
           <h1>{this.state.correspondingTime}</h1>
         </div>
       </DeckGL>
-    );
+    )
   }
 }
 
-export function renderToDOM(container) {
-  render(<App />, container);
+export function renderToDOM (container) {
+  render(<App />, container)
 }
