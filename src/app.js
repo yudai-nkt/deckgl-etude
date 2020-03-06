@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import { render } from 'react-dom'
 import { StaticMap, FullscreenControl } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
-// import {PolygonLayer, GeoJsonLayer} from '@deck.gl/layers'
 import { TripsLayer } from '@deck.gl/geo-layers'
 
 // Set your mapbox token here
@@ -13,7 +12,7 @@ const MAPBOX_TOKEN = process.env.MapboxAccessToken
 const DATA_URL = {
   TRIPS:
     'https://gist.githubusercontent.com/yudai-nkt/80bdbecde74ea431c755e31fa167451d/raw/6b37fadcd38a009eeec6e732439b1eb6a47e7a19/tmp.json'
-};
+}
 
 const DEFAULT_THEME = {
   aizu_BL_01_3: [0, 139, 148],
@@ -100,8 +99,8 @@ export default class App extends Component {
         currentTime: this.state.time,
 
         shadowEnabled: false
-      }),
-    ];
+      })
+    ]
   }
 
   render () {
